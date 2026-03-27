@@ -250,6 +250,114 @@ const D1_POOL = {
 /* 전역 플래그 — StrictMode 이중 실행 완전 차단 */
 let _tickerStarted = false;
 
+/* ── MAU 추적 헬퍼 ── */
+function recordVisit() {
+  const today = new Date().toISOString().slice(0, 10);          // "YYYY-MM-DD"
+  const month = today.slice(0, 7);                               // "YYYY-MM"
+  const lastDate = localStorage.getItem("butter_last_visit") || "";
+  if (lastDate === today) return;                                 // 오늘 이미 기록됨
+  localStorage.setItem("butter_last_visit", today);
+  const raw = localStorage.getItem("butter_mau");
+  const data = raw ? JSON.parse(raw) : {};
+  data[month] = (data[month] || 0) + 1;
+  localStorage.setItem("butter_mau", JSON.stringify(data));
+}
+
+function getMauData() {
+  const raw = localStorage.getItem("butter_mau");
+  return raw ? JSON.parse(raw) : {};
+}
+
+/* ── MAU 패널 컴포넌트 ── */
+function MauPanel() {
+  const [data, setData] = React.useState({});
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    recordVisit();
+    setData(getMauData());
+  }, []);
+
+  const months = Object.keys(data).sort();
+  const total  = months.reduce((s, m) => s + data[m], 0);
+  const currentMonth = new Date().toISOString().slice(0, 7);
+
+  const maxVal = Math.max(...months.map(m => data[m]), 1);
+
+  const MONTH_KO = ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"];
+  function fmtMonth(ym) {
+    const [y, m] = ym.split("-");
+    return `${y}년 ${MONTH_KO[parseInt(m) - 1]}`;
+  }
+
+  return (
+    <div style={{ background:"#0d0d1f", border:"1px solid #1e1e4a", borderRadius:"18px", padding:"1rem 1.2rem", marginBottom:"2rem" }}>
+      {/* 헤더 */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", cursor:"pointer" }} onClick={() => setOpen(v => !v)}>
+        <div style={{ display:"flex", alignItems:"center", gap:"10px" }}>
+          <span style={{ fontSize:"1rem" }}>📊</span>
+          <span style={{ fontWeight:800, fontSize:".9rem", color:"#a78bfa" }}>MAU 현황</span>
+          <span style={{
+            background:"#4c1d95", color:"#c4b5fd", fontSize:".68rem",
+            padding:"2px 8px", borderRadius:"999px", fontWeight:700,
+          }}>누적 {total.toLocaleString()}회</span>
+        </div>
+        <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
+          <div style={{ textAlign:"right" }}>
+            <div style={{ color:"#6b7280", fontSize:".62rem", marginBottom:"1px" }}>이번 달</div>
+            <div style={{ color:"#a78bfa", fontWeight:900, fontSize:"1.1rem", lineHeight:1 }}>
+              {(data[currentMonth] || 0).toLocaleString()}
+              <span style={{ color:"#6b7280", fontSize:".65rem", fontWeight:400, marginLeft:"2px" }}>DAU</span>
+            </div>
+          </div>
+          <span style={{ color:"#4b5563", fontSize:".8rem" }}>{open ? "▲" : "▼"}</span>
+        </div>
+      </div>
+
+      {/* 상세 */}
+      {open && (
+        <div style={{ marginTop:"1rem", borderTop:"1px solid #1e1e4a", paddingTop:"1rem" }}>
+          {months.length === 0 ? (
+            <div style={{ color:"#4b5563", fontSize:".78rem", textAlign:"center", padding:"12px 0" }}>아직 기록이 없습니다</div>
+          ) : (
+            <div style={{ display:"flex", flexDirection:"column", gap:"8px" }}>
+              {months.map(m => {
+                const val  = data[m];
+                const pct  = Math.round((val / maxVal) * 100);
+                const isCur = m === currentMonth;
+                return (
+                  <div key={m}>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:".72rem", marginBottom:"3px" }}>
+                      <span style={{ color: isCur ? "#a78bfa" : "#6b7280", fontWeight: isCur ? 700 : 400 }}>
+                        {fmtMonth(m)}{isCur && " ●"}
+                      </span>
+                      <span style={{ color: isCur ? "#a78bfa" : "#9ca3af", fontWeight:700 }}>{val.toLocaleString()}회</span>
+                    </div>
+                    <div style={{ height:"6px", background:"#1a1a3a", borderRadius:"999px", overflow:"hidden" }}>
+                      <div style={{
+                        height:"100%", borderRadius:"999px",
+                        width:`${pct}%`,
+                        background: isCur
+                          ? "linear-gradient(90deg,#7c3aed,#a78bfa)"
+                          : "linear-gradient(90deg,#374151,#6b7280)",
+                        transition:"width .8s cubic-bezier(.4,0,.2,1)",
+                      }}/>
+                    </div>
+                  </div>
+                );
+              })}
+              <div style={{ textAlign:"right", color:"#4b5563", fontSize:".68rem", marginTop:"4px", borderTop:"1px solid #1e1e4a", paddingTop:"8px" }}>
+                총합: <span style={{ color:"#a78bfa", fontWeight:800 }}>{total.toLocaleString()}회</span>
+                &nbsp;({months.length}개월)
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function genNick() {
   const p = NICK_PRE[Math.floor(Math.random() * NICK_PRE.length)];
   const n = Math.floor(Math.random() * 9000) + 1000;
@@ -308,7 +416,7 @@ function TickerItem({ item, onEdit, onDelete, isOwn, showVote }) {
   function open(m) { setMode(m); setPw(""); setErr(""); }
   function close()  { setMode(null); }
   function submit() {
-    if (pw !== item.password) { setErr("비밀번호 틀림"); return; }
+    if ((pw.trim() || "0000") !== item.password) { setErr("비밀번호 틀림"); return; }
     if (mode === "delete") { onDelete(item.id); return; }
     if (!editVal.trim()) return;
     if (hasBad(editVal)) { setErr("부적절한 표현은 사용할 수 없습니다"); return; }
@@ -546,7 +654,6 @@ function App() {
   function submitComment() {
     setSubmitErr("");
     if (!text.trim()) return;
-    if (!pw.trim())   { setSubmitErr("비밀번호를 입력해주세요"); return; }
     if (hasBad(text)) { alert("부적절한 표현은 사용할 수 없습니다"); return; }
     const last = comments[comments.length - 1];
     if (last && last.nickname === nickname && last.text === text.trim()) {
@@ -556,7 +663,7 @@ function App() {
       id:       Date.now().toString(),
       nickname,
       text:     text.trim(),
-      password: pw,
+      password: pw.trim() || "0000",
       vote:     voteType || "인정",
       time:     fmtTime(),
     };
@@ -613,33 +720,20 @@ function App() {
 
         {/* ── D-Day 결과 공개 ── */}
         {isDDay && (
-          <div className="scale-in" style={{
-            background:"linear-gradient(135deg,#1a0a00,#2d1500)",
-            border:"2px solid #f59e0b", borderRadius:"20px",
-            padding:"1.8rem 1.4rem", marginBottom:"2rem", textAlign:"center",
+          <div style={{
+            position:"fixed", inset:0, zIndex:9999,
+            background:"#0a0a3a",
+            display:"flex", alignItems:"center", justifyContent:"center",
           }}>
-            <div style={{ color:"#fbbf24", fontSize:".75rem", letterSpacing:".2em", fontWeight:700, marginBottom:".6rem" }}>
-              🏆 투표 결과 발표 🏆
-            </div>
-            <div style={{ color:"#fff", fontWeight:900, fontSize:"clamp(1.2rem,4vw,1.8rem)", marginBottom:"1.2rem" }}>
-              {agreeP >= 50 ? "버터빵, 왕좌를 차지하다!" : "버터빵, 억지 유행으로 판명!"}
-            </div>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px", marginBottom:"1rem" }}>
-              {[
-                { label:"👍 인정", pct:agreeP,    color:"#22c55e", grad:"linear-gradient(90deg,#22c55e,#86efac)" },
-                { label:"👎 억지", pct:disagreeP, color:"#ef4444", grad:"linear-gradient(90deg,#ef4444,#fca5a5)" },
-              ].map(({ label, pct, color, grad }) => (
-                <div key={label} style={{ background:"rgba(0,0,0,.3)", borderRadius:"12px", padding:"12px 10px" }}>
-                  <div style={{ color, fontWeight:800, fontSize:".85rem", marginBottom:"6px" }}>{label}</div>
-                  <div style={{ color, fontWeight:900, fontSize:"2rem", lineHeight:1 }}>{pct}%</div>
-                  <div style={{ height:"6px", background:"#1f2937", borderRadius:"999px", overflow:"hidden", marginTop:"8px" }}>
-                    <div className="progress-bar" style={{ height:"100%", width:`${pct}%`, background:grad, borderRadius:"999px" }}/>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ color:"#9ca3af", fontSize:".78rem" }}>
-              총 {voteCount.toLocaleString()}표 집계 완료
+            <div style={{
+              color:"#fff", fontWeight:900,
+              fontSize:"clamp(1.1rem,4.5vw,2rem)",
+              textAlign:"center", lineHeight:1.7,
+              padding:"0 2rem",
+            }}>
+              {agreeP >= 50
+                ? "버터빵이 두쫀쿠로부터 유행을 승계받았습니다."
+                : "버터빵이 두쫀쿠로부터 왕위를 못 받았습니다."}
             </div>
           </div>
         )}
@@ -719,6 +813,9 @@ function App() {
             </div>
           )
         )}
+
+        {/* ── MAU 패널 ── */}
+        <MauPanel />
 
         {/* ── Live Comment Tickers ── */}
         <div style={{ marginBottom:"2rem" }}>
