@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>버터빵, 왕좌까지 D-7</title>
+  <title>버터떡 유행왕 승계까지, D-7</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -230,19 +230,20 @@ const { useState, useEffect, useRef } = React;
 
 /* ── Constants ── */
 const BANNED = ["씨발","병신","좆","fuck","shit","개새","ㅅㅂ","ㅂㅅ","새끼","미친놈","존나","ㅈㄴ"];
-const NICK_PRE = ["익명","빵덕후","버터러","빵러버","user_","밀가루","크루아상","단팥맨"];
+const NICK_PRE = ["익명","떡덕후","버터러","떡러버","user_","쌀가루","버터떡러","단팥맨"];
 
 /* 각 댓글은 고정 닉네임과 쌍으로 묶여 있음 — 같은 댓글은 항상 같은 아이디로 표시 */
 const D1_POOL = {
   인정: [
-    { nick:"빵순이99",    text:"내 주변 지인들 다 이거 팔던데..?" },
-    { nick:"버터사수대",  text:"ㅋㅋ 솔직히 그만큼 올랐으면 유행이었음 ㅇㅇ 걍 지났을 뿐이지" },
-    { nick:"빵덕후77",    text:"ㅋㅋㅋ 애쓴다 애써 이런 사이트나 만들고" },
+    { nick:"떡순이99",    text:"내 주변 지인들 다 이거 사먹던데..?" },
+    { nick:"버터떡사수대", text:"ㅋㅋ 솔직히 이 조합 은근 맛있음 ㅇㅇ 우리가 밀면 된다" },
+    { nick:"떡덕후77",    text:"ㅋㅋㅋ 애쓴다 애써 이런 사이트나 만들고" },
+    { nick:"쌀가루마스터", text:"버터떡이면 진짜 될 것 같은데 우리가 만들자" },
   ],
   억지: [
-    { nick:"단팥이싫어",  text:"당연 억지지 내 주변에 버터빵 먹었단 사람 아무도 없음" },
-    { nick:"크림파",      text:"오빠가 이거 팔던데 매진 쳤다고 처웃던데?" },
-    { nick:"밀가루덕후",  text:"현실을 살아 인간들아" },
+    { nick:"단팥이싫어",  text:"당연 안 되지 내 주변에 버터떡 먹었단 사람 아무도 없음" },
+    { nick:"크림떡파",    text:"버터빵도 논란이었는데 버터떡은 더 심하지 않냐" },
+    { nick:"현실주의자",  text:"현실을 살아 인간들아" },
     { nick:"편의점왕",    text:"아 실수;; 이거 왜 투표 되돌리기 없음 개똥망사이트" },
   ],
 };
@@ -379,27 +380,91 @@ function checkD1() {
   return (Date.now() - parseInt(fv)) >= 6 * 24 * 60 * 60 * 1000;
 }
 
+/* ── D-Day Sequence ── */
+function DDaySequence({ agreeP }) {
+  const [phase, setPhase] = React.useState(0); // 0=탄생중, 1=탄생완료
+
+  React.useEffect(() => {
+    const t = setTimeout(() => setPhase(1), 4000);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div style={{
+      position:"fixed", inset:0, zIndex:9999,
+      background:"#000010",
+      display:"flex", alignItems:"center", justifyContent:"center",
+      flexDirection:"column",
+    }}>
+      {phase === 0 ? (
+        <div key="phase0" style={{
+          color:"#ffd700", fontWeight:900,
+          fontSize:"clamp(1.4rem,5vw,2.4rem)",
+          textAlign:"center", lineHeight:1.7,
+          padding:"0 2rem",
+          animation:"fadeInUp .6s ease forwards",
+        }}>
+          🍡 버터떡이<br/>태어나는 중...
+          <div style={{ marginTop:"2rem", fontSize:"clamp(.85rem,2.5vw,1.1rem)", color:"#9ca3af", fontWeight:400 }}>
+            유행왕국 14827번째 왕좌 승계 실험
+          </div>
+          <div style={{ marginTop:"2rem", display:"flex", gap:"8px", justifyContent:"center" }}>
+            {[0,1,2].map(i => (
+              <div key={i} style={{
+                width:"10px", height:"10px", borderRadius:"50%", background:"#ffd700",
+                animation:`ping 1.2s cubic-bezier(0,0,.2,1) ${i*0.3}s infinite`,
+              }}/>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div key="phase1" style={{
+          color:"#fff", fontWeight:900,
+          fontSize:"clamp(1.2rem,4.5vw,2rem)",
+          textAlign:"center", lineHeight:1.8,
+          padding:"0 2rem",
+          animation:"fadeInUp .6s ease forwards",
+        }}>
+          {agreeP >= 50 ? (
+            <>
+              <div style={{ color:"#ffd700", fontSize:"clamp(1.8rem,6vw,3rem)", marginBottom:"1rem" }}>👑</div>
+              버터떡의 탄생 완료.<br/>
+              <span style={{ color:"#ffd700" }}>유행왕좌를 승계받았습니다.</span>
+            </>
+          ) : (
+            <>
+              <div style={{ fontSize:"clamp(1.8rem,6vw,3rem)", marginBottom:"1rem" }}>💔</div>
+              버터떡의 탄생 완료.<br/>
+              <span style={{ color:"#f87171" }}>유행왕좌 승계에 실패했습니다.</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Star Wars Crawl ── */
 function StarWarsCrawl() {
   return (
     <div className="sw-wrap">
-      <div className="sw-logo">버터빵, 왕좌까지<br/>D-7</div>
+      <div className="sw-logo">버터떡 유행왕<br/>승계까지 D-7</div>
       <div className="sw-ending">
-        <div className="ep-label">🍞 EPISODE VII</div>
-        <div className="ep-title">억지 유행 논란</div>
+        <div className="ep-label">🍡 EPISODE VIII</div>
+        <div className="ep-title">유행왕 승계 실험</div>
       </div>
       <div className="sw-fixed-msg">
-        당신의 한 표가<br/>버터빵의 운명을 결정한다.
+        당신의 한 표가<br/>버터떡의 운명을 결정한다.
       </div>
       <div className="sw-stage">
         <div className="sw-crawl">
-          <div className="ep">에피소드 VII</div>
-          <div className="title">버터빵, 왕좌까지 D-7</div>
-          <p>억지 유행 논란의 주인공,<br/>버터빵이 두쫀쿠의 왕좌를 노린다.</p>
-          <p>"왕위를 계승하는 중입니다."</p>
-          <p>그러나 어둠의 세력은 속삭인다.<br/>"이건 그냥 억지 유행이다."</p>
-          <p>용감한 반란군 기사단이<br/>은하계 최고의 논쟁을 해결하기 위해<br/>투표 플랫폼을 열었다.</p>
-          <p className="final">당신의 한 표가<br/>버터빵의 운명을 결정한다.</p>
+          <div className="ep">에피소드 VIII</div>
+          <div className="title">버터떡 유행왕 승계까지 D-7</div>
+          <p>버터빵은<br/>왕좌를 잇지 못했다.</p>
+          <p>그러자 버터빵의 비운의 후계자,<br/>버터떡이 등장하는데....</p>
+          <p>"저는 아버지와 다릅니다.<br/>유행왕좌, 제가 가질 것입니다."</p>
+          <p>버터떡의 오만한 선언이<br/>유행왕국의 14827번째<br/>왕좌 승계 전쟁의 시작이었다…….</p>
+          <p className="final">당신의 한 표가<br/>버터떡의 운명을 결정한다.</p>
         </div>
       </div>
     </div>
@@ -441,7 +506,7 @@ function TickerItem({ item, onEdit, onDelete, isOwn, showVote }) {
             fontSize:".62rem", padding:"1px 5px", borderRadius:"4px", fontWeight:800,
             background: item.vote === "인정" ? "#14532d" : "#450a0a",
             color:      item.vote === "인정" ? "#86efac" : "#fca5a5",
-          }}>{item.vote === "인정" ? "[유행]" : "[억지]"}</span>
+          }}>{item.vote === "인정" ? "[밀어본다]" : "[안 된다]"}</span>
         )}
         <span style={{ color:"#ffd700", fontSize:".72rem", fontWeight:700 }}>{item.nickname}</span>
         <span style={{ color:"#444", fontSize:".65rem", marginLeft:"auto" }}>{item.time}</span>
@@ -484,8 +549,8 @@ function TickerItem({ item, onEdit, onDelete, isOwn, showVote }) {
 
 /* ── Ticker Column ── */
 const THEME = {
-  인정: { label:"👍 인정", color:"#4ade80", bg:"#061209", border:"#166534" },
-  억지: { label:"👎 억지", color:"#f87171", bg:"#120606", border:"#7f1d1d" },
+  인정: { label:"👍 밀어본다", color:"#4ade80", bg:"#061209", border:"#166534" },
+  억지: { label:"👎 안 된다",  color:"#f87171", bg:"#120606", border:"#7f1d1d" },
   all:  { label:"🔴 LIVE — 전체 실시간", color:"#fb923c", bg:"#0d0905", border:"#9a3412" },
 };
 
@@ -520,7 +585,7 @@ function TickerColumn({ side, items, onEdit, onDelete, userNick, fullWidth }) {
         <div ref={scrollRef} className="ticker-scroll" style={{ height:"100%", overflowY:"auto", padding:"70px 8px 10px" }}>
           {items.length === 0 ? (
             <div style={{ textAlign:"center", color:"#4b5563", paddingTop:"60px", fontSize:".78rem" }}>
-              {side === "인정" ? "인정하는 첫 댓글 👍" : "억지라고 말해봐 👎"}
+              {side === "인정" ? "밀어본다는 첫 댓글 👍" : "안 된다고 말해봐 👎"}
             </div>
           ) : (
             items.map(item => (
@@ -566,12 +631,12 @@ function App() {
   /* countdown to NEXT Saturday 17:00 */
   useEffect(() => {
     function getTarget() {
-      return new Date("2026-03-28T17:00:00");
+      return new Date("2026-04-11T23:00:00");
     }
     function calc() {
       const diff = getTarget() - Date.now();
       if (diff <= 0) {
-        setCountdown("발표 완료");
+        setCountdown("탄생 완료");
         setIsDDay(true);
         return;
       }
@@ -682,9 +747,9 @@ function App() {
   }
 
   function getMessage() {
-    if (agreeP >= 65) return "지금 분위기: 인정 쪽으로 기우는 중 🔥";
-    if (agreeP >= 50) return "팽팽한 접전! 아직 승부 모름 ⚡";
-    return "의외로 억지 의견 많음 👀";
+    if (agreeP >= 65) return "지금 분위기: 밀리는 중 🔥 이거 진짜 될지도 모르는데…";
+    if (agreeP >= 50) return "이거 진짜 될 수도 있는데?? ⚡";
+    return "의외로 안 된다는 쪽 많음 👀";
   }
   const disagreeP = 100 - agreeP;
 
@@ -698,20 +763,19 @@ function App() {
         {/* Header */}
         <div className="fade-in-up" style={{ textAlign:"center", marginBottom:"2rem" }}>
           <div style={{ color:"#5ab4d4", fontSize:".72rem", letterSpacing:".3em", fontWeight:700, marginBottom:".5rem" }}>
-            🍞 EPISODE VII · 억지 유행 논란
+            🍡 EPISODE VIII · 유행왕 승계 실험
           </div>
           <h1 style={{ fontSize:"clamp(1.8rem,6vw,2.6rem)", fontWeight:900, lineHeight:1.2, marginBottom:".6rem" }}>
-            버터빵, 왕좌까지 <span style={{ color:"#ffd700" }}>D-{daysLeft}</span>
+            버터떡 유행왕 승계까지, <span style={{ color:"#ffd700" }}>D-{daysLeft}</span>
           </h1>
           <p style={{ color:"#9ca3af", fontSize:".9rem", marginBottom:"1.2rem" }}>
-            요즘 유행,&nbsp;
-            <span style={{ color:"#4ade80", fontWeight:700 }}>인정</span>
-            &nbsp;vs&nbsp;
-            <span style={{ color:"#f87171", fontWeight:700 }}>억지</span>
+            버터떡, 우리가 충성하면 유행왕이 된다.&nbsp;
+            <span style={{ color:"#4ade80", fontWeight:700 }}>vs.</span>
+            &nbsp;<span style={{ color:"#f87171", fontWeight:700 }}>될 수 없다.</span>
           </p>
           {/* countdown */}
           <div style={{ display:"inline-block", background:"#0d0d1f", border:"1px solid #2a2a5a", borderRadius:"14px", padding:"10px 24px" }}>
-            <div style={{ color:"#6b7280", fontSize:".65rem", letterSpacing:".15em", marginBottom:"4px" }}>토요일 오후 7시 발표까지</div>
+            <div style={{ color:"#6b7280", fontSize:".65rem", letterSpacing:".15em", marginBottom:"4px" }}>4월 11일(토) 밤 11시 결과 발표까지</div>
             <div style={{ color:"#ffd700", fontSize:"clamp(1.6rem,6vw,2.2rem)", fontWeight:900, letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }}>
               {countdown}
             </div>
@@ -720,22 +784,7 @@ function App() {
 
         {/* ── D-Day 결과 공개 ── */}
         {isDDay && (
-          <div style={{
-            position:"fixed", inset:0, zIndex:9999,
-            background:"#0a0a3a",
-            display:"flex", alignItems:"center", justifyContent:"center",
-          }}>
-            <div style={{
-              color:"#fff", fontWeight:900,
-              fontSize:"clamp(1.1rem,4.5vw,2rem)",
-              textAlign:"center", lineHeight:1.7,
-              padding:"0 2rem",
-            }}>
-              {agreeP >= 50
-                ? "버터빵이 두쫀쿠로부터 유행을 승계받았습니다."
-                : "버터빵이 두쫀쿠로부터 왕위를 못 받았습니다."}
-            </div>
-          </div>
+          <DDaySequence agreeP={agreeP} />
         )}
 
         {/* D-1 Banner */}
@@ -747,7 +796,7 @@ function App() {
             border:"1px solid #c2410c",
           }}>
             <span style={{ fontWeight:900, fontSize:"1rem", color:"#fed7aa" }}>
-              🚨 D-1 — 오늘이 마지막! 실시간 의견이 쏟아지는 중
+              🚨 D-1 — 오늘 자정이면 버터떡의 운명이 결정된다
             </span>
           </div>
         )}
@@ -776,52 +825,79 @@ function App() {
               fontSize:"clamp(1rem,3.5vw,1.4rem)", fontWeight:900, color:"#fff", cursor:"pointer",
               background:"linear-gradient(135deg,#22c55e,#15803d)",
               boxShadow:"0 8px 32px rgba(34,197,94,.35)",
-            }}>인정한다 👍</button>
+            }}>믿어본다 👍</button>
             <button className="vote-btn" onClick={() => handleVote("억지")} style={{
               padding:"1.4rem .5rem", borderRadius:"18px", border:"none",
               fontSize:"clamp(1rem,3.5vw,1.4rem)", fontWeight:900, color:"#fff", cursor:"pointer",
               background:"linear-gradient(135deg,#ef4444,#b91c1c)",
               boxShadow:"0 8px 32px rgba(239,68,68,.35)",
-            }}>솔직히 억지다 👎</button>
+            }}>절대 안 된다 👎</button>
           </div>
         ) : (
           showResults && (
-            <div className="scale-in" style={{ background:"#111827", borderRadius:"20px", padding:"1.4rem", marginBottom:"2.5rem", border:"1px solid #1f2937" }}>
-              <div style={{ textAlign:"center", marginBottom:"1.2rem" }}>
-                <div style={{ color:"#ffd700", fontWeight:700, fontSize:".85rem", marginBottom:".3rem" }}>
-                  당신의 선택: {voteType === "인정" ? "👍 인정한다" : "👎 솔직히 억지다"}
+            <>
+              {/* 입장 선언 카드 */}
+              <div className="scale-in" style={{
+                background: voteType === "인정"
+                  ? "linear-gradient(135deg,#052e16,#064e3b)"
+                  : "linear-gradient(135deg,#3b0a0a,#450a0a)",
+                borderRadius:"20px", padding:"1.6rem 1.4rem", marginBottom:"1.2rem",
+                border: voteType === "인정" ? "1px solid #166534" : "1px solid #7f1d1d",
+                textAlign:"center",
+              }}>
+                <div style={{ color:"#9ca3af", fontSize:".78rem", marginBottom:".6rem" }}>나는</div>
+                <div style={{
+                  display:"inline-block",
+                  background: voteType === "인정" ? "#14532d" : "#450a0a",
+                  color:      voteType === "인정" ? "#86efac" : "#fca5a5",
+                  fontWeight:900, fontSize:"1.1rem",
+                  padding:"8px 20px", borderRadius:"10px", marginBottom:"1rem",
+                }}>
+                  {voteType === "인정" ? "👍 밀어본다" : "👎 절대 안 된다"}
                 </div>
-                <div style={{ color:"#fff", fontWeight:800, fontSize:"1.05rem" }}>{getMessage()}</div>
+                <div style={{
+                  color:"#e5e7eb", fontSize:".95rem", fontWeight:700, lineHeight:1.5,
+                }}>
+                  {voteType === "인정"
+                    ? "버터떡 유행 가능하다 봄 ㅋㅋ"
+                    : "유행은 사람 마음이지;"}
+                </div>
               </div>
-              {/* two mini bars side by side */}
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px" }}>
-                {[
-                  { label:"👍 인정", pct:agreeP,    color:"#22c55e", grad:"linear-gradient(90deg,#22c55e,#86efac)" },
-                  { label:"👎 억지", pct:disagreeP, color:"#ef4444", grad:"linear-gradient(90deg,#ef4444,#fca5a5)" },
-                ].map(({ label, pct, color, grad }) => (
-                  <div key={label}>
-                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:".78rem", marginBottom:"5px" }}>
-                      <span style={{ color, fontWeight:700 }}>{label}</span>
-                      <span style={{ color, fontWeight:700 }}>{pct}%</span>
+
+              {/* 결과 퍼센트 */}
+              <div className="scale-in" style={{ background:"#111827", borderRadius:"20px", padding:"1.4rem", marginBottom:"2.5rem", border:"1px solid #1f2937" }}>
+                <div style={{ textAlign:"center", marginBottom:"1.2rem" }}>
+                  <div style={{ color:"#fff", fontWeight:800, fontSize:"1.05rem" }}>{getMessage()}</div>
+                </div>
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"12px" }}>
+                  {[
+                    { label:"👍 밀어본다", pct:agreeP,    color:"#22c55e", grad:"linear-gradient(90deg,#22c55e,#86efac)" },
+                    { label:"👎 안 된다",  pct:disagreeP, color:"#ef4444", grad:"linear-gradient(90deg,#ef4444,#fca5a5)" },
+                  ].map(({ label, pct, color, grad }) => (
+                    <div key={label}>
+                      <div style={{ display:"flex", justifyContent:"space-between", fontSize:".78rem", marginBottom:"5px" }}>
+                        <span style={{ color, fontWeight:700 }}>{label}</span>
+                        <span style={{ color, fontWeight:700 }}>{pct}%</span>
+                      </div>
+                      <div style={{ height:"10px", background:"#1f2937", borderRadius:"999px", overflow:"hidden" }}>
+                        <div className="progress-bar" style={{ height:"100%", width:`${pct}%`, background:grad, borderRadius:"999px" }}/>
+                      </div>
                     </div>
-                    <div style={{ height:"10px", background:"#1f2937", borderRadius:"999px", overflow:"hidden" }}>
-                      <div className="progress-bar" style={{ height:"100%", width:`${pct}%`, background:grad, borderRadius:"999px" }}/>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )
         )}
 
-        {/* ── MAU 패널 ── */}
-        <MauPanel />
+        {/* ── MAU 패널 ── (숨김) */}
+        {/* <MauPanel /> */}
 
         {/* ── Live Comment Tickers ── */}
         <div style={{ marginBottom:"2rem" }}>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"10px" }}>
             <h2 style={{ fontWeight:800, fontSize:"1rem" }}>💬 실시간 의견</h2>
-            {d1 && <span style={{ fontSize:".7rem", color:"#fb923c", fontWeight:700 }}>● LIVE D-1</span>}
+            {d1 && <span style={{ fontSize:".7rem", color:"#fb923c", fontWeight:700 }}>● LIVE D-1 마지막 기회</span>}
           </div>
           {d1 ? (
             /* D-1: 하나의 통합 컬럼 */
@@ -839,7 +915,7 @@ function App() {
         {!voted ? (
           <div style={{ background:"#111827", borderRadius:"18px", padding:"1.2rem", marginBottom:"2rem", border:"1px solid #1f2937", textAlign:"center" }}>
             <div style={{ color:"#6b7280", fontSize:".85rem", marginBottom:".5rem" }}>💬 댓글은 투표 후 달 수 있어요</div>
-            <div style={{ color:"#4b5563", fontSize:".75rem" }}>위에서 먼저 인정 또는 억지에 투표해주세요</div>
+            <div style={{ color:"#4b5563", fontSize:".75rem" }}>위에서 먼저 입장을 선택해주세요</div>
           </div>
         ) : (
           <div style={{ background:"#111827", borderRadius:"18px", padding:"1rem", marginBottom:"2rem", border:"1px solid #1f2937" }}>
@@ -851,7 +927,7 @@ function App() {
                 background: voteType === "인정" ? "#14532d" : "#450a0a",
                 color:      voteType === "인정" ? "#86efac" : "#fca5a5",
               }}>
-                {voteType === "인정" ? "[찬성]" : "[억지]"}
+                {voteType === "인정" ? "[밀어본다]" : "[안 된다]"}
               </span>
             </div>
             <textarea
@@ -882,8 +958,8 @@ function App() {
 
         {/* Footer */}
         <div style={{ textAlign:"center", color:"#374151", fontSize:".72rem", lineHeight:1.8 }}>
-          버터빵 왕좌 논란 아카이브 © 2025<br/>
-          May the Bread be with you.
+          버터떡 유행왕 승계 실험 아카이브 © 2026<br/>
+          May the Tteok be with you.
         </div>
       </div>
     </div>
