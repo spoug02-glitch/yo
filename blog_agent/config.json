@@ -1,0 +1,37 @@
+{
+  "score_floor": {"value": 60, "unverified": true},
+  "news": {
+    "weight_freshness": {"value": 0.5, "unverified": true},
+    "weight_buzz": {"value": 0.5, "unverified": true},
+    "freshness_zero_hours": {"value": 72, "unverified": true},
+    "buzz_saturation_count": {"value": 8, "unverified": true}
+  },
+  "ledger": {"cooldown_days": {"value": 60, "unverified": true}},
+  "trend": {
+    "volume_saturation": {"value": 100000, "unverified": true},
+    "exclude_patterns": {
+      "value": [
+        "대통령", "국회", "의원", "정당", "여당", "야당", "총리", "장관", "대변인",
+        "탄핵", "선거", "투표", "시장", "도지사", "구청장", "군수", "직무대행",
+        "정치", "외교", "국방부", "미군", "북한", "정상회담", "국정감사", "청문회",
+        "아이돌", "가수", "배우", "연예인", "드라마", "예능", "그룹", "콘서트",
+        "컴백", "시구", "어워즈", "시상식", "보이콧", "인스타", "유튜버",
+        "크리에이터", "열애", "결혼", "이혼", "나는 솔로", "옥순", "영자"
+      ],
+      "note": "2026-08 사용자 지시로 추가: 정치는 논란 리스크가 커서, 연예는 '데이터로 보는' 앵글로 파낼 게 없어서 트렌드 후보에서 제외. 키워드 부분일치 기반 휴리스틱이라 완벽하지 않음 -- 새로운 정치인/셀럽 이름은 못 걸러낼 수 있으니 주기적으로 목록을 보강할 것."
+    }
+  },
+  "rss_feeds": [
+    "https://techcrunch.com/feed/",
+    "https://www.theverge.com/rss/index.xml",
+    "https://feeds.arstechnica.com/arstechnica/index"
+  ],
+  "cert_seed_keywords": [
+    "AICE",
+    "AICE 자격증",
+    "빅데이터분석기사",
+    "ADsP",
+    "SQLD",
+    "AI자격증"
+  ]
+}
